@@ -79,7 +79,7 @@
     <configuration name="Euclid" type="Application" factoryName="Application">
       <option name="MAIN_CLASS_NAME" value="Euclid" />
       <module name="Algorithms, Part I" />
-      <option name="PROGRAM_PARAMETERS" value="51 6" />
+      <option name="PROGRAM_PARAMETERS" value="10000451000" />
       <method v="2" />
     </configuration>
     <configuration name="HelloGoodbye" type="Application" factoryName="Application">

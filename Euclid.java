@@ -6,10 +6,11 @@
 
 public class Euclid {
     public static void main(String[] args) {
-        System.out.printf("GCD(%s,%s) = %d",
+        double result = sqrt(Double.parseDouble(args[0]));
+        System.out.printf("SQRT(%s) = %f (%f)",
                           args[0],
-                          args[1],
-                          gcd(Integer.parseInt(args[0]), Integer.parseInt(args[1])));
+                          result,
+                          result * result);
     }
 
     private static int gcd(int p, int q) {
@@ -17,7 +18,17 @@ public class Euclid {
             return p;
         }
         int r = p % q;
-
         return gcd(q, r);
+    }
+
+    private static double sqrt(double c) {
+        if (c < 0) return Double.NaN;
+        double err = 1.0e-15;
+        double t = c;
+        while (Math.abs(t - c / t) > err * t) {
+            t = (c / t + t) / 2.0;
+            System.out.println(t);
+        }
+        return t;
     }
 }
