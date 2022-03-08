@@ -4,14 +4,13 @@
  *  Last modified:     March 6, 2022
  **************************************************************************** */
 
-import edu.princeton.cs.algs4.StdOut;
 import edu.princeton.cs.algs4.WeightedQuickUnionUF;
 
 public class Percolation {
     // states of the grid's sites:
     // false - site is blocked, true - site is open (full or not)
     private boolean[][] grid;
-    private int gridSize;
+    private final int gridSize;
     private int openSites = 0;
 
     private WeightedQuickUnionUF uF;
@@ -30,27 +29,16 @@ public class Percolation {
 
     // opens the site (row, col) if it is not open already
     public void open(int row, int col) {
-        StdOut.printf("Before open site %s%n", percolates());
-        StdOut.printf("(%d,%d) ", row, col);
-
         if (row < 1 || row > gridSize || col < 1 || col > gridSize)
             throw new IllegalArgumentException();
         if (!isOpen(row, col)) {
             grid[row - 1][col - 1] = true;
+            // StdOut.printf("(%s, %s) open%n", row, col);
             openSites++;
-
-            StdOut.printf("is opened.%n");
-            printGrid();
-            StdOut.printf("Sets before: %d%n", uF.count());
-            printMap();
             lookAround(row, col);
-            StdOut.printf("Sets after: %d%n", uF.count());
-            printMap();
+            // printGrid();
+            // printIsTrue();
         }
-        else {
-            StdOut.printf("already opened.%n");
-        }
-        StdOut.printf("After open site %s%n", percolates());
     }
 
     // is the site (row, col) open?
@@ -74,35 +62,53 @@ public class Percolation {
 
     // does the system percolate?
     public boolean percolates() {
-        return uF.find(0) == uF.find(gridSize + gridSize * gridSize);
-    }
-
-    // number of sets
-    public int count() {
-        return uF.count();
-    }
-
-    public void printMap() {
-        for (int i = 0; i < gridSize * (2 + gridSize); i++) {
-            StdOut.printf("%2d ", uF.find(i));
-            if (i > 0 && (i + 1) % gridSize == 0)
-                StdOut.println();
-        }
-        StdOut.println();
-    }
-
-    public void printGrid() {
         for (int i = 0; i < gridSize; i++) {
-            for (int j = 0; j < gridSize; j++)
-                StdOut.printf("%d ", (grid[i][j]) ? 1 : 0);
-            StdOut.println();
+            if (grid[gridSize - 1][i] && isFull(gridSize, i + 1))
+                return true;
         }
+        return false;
     }
 
-    // test client (optional)
-    public static void main(String[] args) {
+    // private void printIsTrue() {
+    //     StdOut.println("isFull state:");
+    //     int total = 0;
+    //     for (int i = 0; i < gridSize; i++) {
+    //         for (int j = 0; j < gridSize; j++) {
+    //             StdOut.printf("%2s ", (isFull(i + 1, j + 1)) ? "T" : "F");
+    //             if (isFull(i + 1, j + 1))
+    //                 total++;
+    //         }
+    //         StdOut.println();
+    //     }
+    //     StdOut.println(total);
+    // }
 
-    }
+    // private void printMap() {
+    //     for (int i = 0; i < gridSize * (2 + gridSize); i++) {
+    //         StdOut.printf("%2d ", uF.find(i));
+    //         if (i > 0 && (i + 1) % gridSize == 0)
+    //             StdOut.println();
+    //     }
+    // }
+
+    // private void printGrid() {
+    //     StdOut.println("isOpen state:");
+    //     int total = 0;
+    //     for (int i = 0; i < gridSize; i++) {
+    //         for (int j = 0; j < gridSize; j++) {
+    //             StdOut.printf("%2d ", (grid[i][j]) ? 1 : 0);
+    //             if (grid[i][j])
+    //                 total++;
+    //         }
+    //         StdOut.println();
+    //     }
+    //     StdOut.println(total);
+    // }
+
+    // // test client (optional)
+    // public static void main(String[] args) {
+    //
+    // }
 
     private void initUF(int size) {
         uF = new WeightedQuickUnionUF(size * (2 + size));
@@ -112,8 +118,6 @@ public class Percolation {
             // virtual row under the bottom row of grid
             uF.union(size + size * size, size + size * size + i);
         }
-        StdOut.printf("Sets: %d%n", uF.count());
-        printMap();
     }
 
     // returns corresponding index from a grid's row and col
@@ -121,26 +125,24 @@ public class Percolation {
         return gridSize * row + col - 1;
     }
 
-    // looks around for a open site
+    // looks around for open sites and unions them
     private void lookAround(int row, int col) {
-        if (row == gridSize) // union a site at the bottom line
-            uF.union(getUfIndex(row, col), gridSize + gridSize * gridSize);
-        if (row == 1)
+        if (row == 1)   // union a site at the top row
             uF.union(0, getUfIndex(row, col));
 
-        // top unit's index
+        // check the upper site
         if (row > 1 && isOpen(row - 1, col))
             uF.union(getUfIndex(row, col), getUfIndex(row - 1, col));
 
-        // left unit's index
+        // check the left site
         if (col > 1 && isOpen(row, col - 1))
             uF.union(getUfIndex(row, col), getUfIndex(row, col - 1));
 
-        // right unit's index
+        // check the right site
         if (col < gridSize && isOpen(row, col + 1))
             uF.union(getUfIndex(row, col), getUfIndex(row, col + 1));
 
-        // bottom unit's index
+        // check the bottom site
         if (row < gridSize && isOpen(row + 1, col))
             uF.union(getUfIndex(row, col), getUfIndex(row + 1, col));
     }
