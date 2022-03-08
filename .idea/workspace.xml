@@ -75,11 +75,10 @@
     <property name="last_opened_file_path" value="$PROJECT_DIR$" />
     <property name="settings.editor.selected.configurable" value="preferences.sourceCode.Java" />
   </component>
-  <component name="RunManager" selected="Application.Euclid">
+  <component name="RunManager" selected="Application.PercolationStats">
     <configuration name="Euclid" type="Application" factoryName="Application">
       <option name="MAIN_CLASS_NAME" value="Euclid" />
       <module name="Algorithms, Part I" />
-      <option name="PROGRAM_PARAMETERS" value="10000451000" />
       <method v="2" />
     </configuration>
     <configuration name="HelloGoodbye" type="Application" factoryName="Application">
@@ -91,6 +90,12 @@
     <configuration name="HelloWorld" type="Application" factoryName="Application">
       <option name="MAIN_CLASS_NAME" value="HelloWorld" />
       <module name="Algorithms, Part I" />
+      <method v="2" />
+    </configuration>
+    <configuration name="PercolationStats" type="Application" factoryName="Application">
+      <option name="MAIN_CLASS_NAME" value="PercolationStats" />
+      <module name="Algorithms, Part I" />
+      <option name="PROGRAM_PARAMETERS" value="9 1" />
       <method v="2" />
     </configuration>
     <configuration name="RandomWord" type="Application" factoryName="Application">

@@ -4,13 +4,16 @@
  *  Last modified:     October 16, 1842
  **************************************************************************** */
 
+import edu.princeton.cs.algs4.Date;
+
 public class Euclid {
     public static void main(String[] args) {
-        double result = sqrt(Double.parseDouble(args[0]));
-        System.out.printf("SQRT(%s) = %f (%f)",
-                          args[0],
-                          result,
-                          result * result);
+        Date a = new Date(12, 31, 2011);
+
+        Date b = new Date(1, 1, 2012);
+        b = a;
+        System.out.printf("%s %s", b, a);
+        // throw new RuntimeException("Error message here.");
     }
 
     private static int gcd(int p, int q) {
