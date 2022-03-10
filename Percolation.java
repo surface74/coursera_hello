@@ -22,8 +22,9 @@ public class Percolation {
         gridSize = n;
         grid = new boolean[gridSize][gridSize];
         for (int i = 0; i < gridSize; i++)
-            for (int j = 0; j < gridSize; j++)
+            for (int j = 0; j < gridSize; j++) {
                 grid[i][j] = false;
+            }
         initUF(gridSize);
     }
 
@@ -31,14 +32,9 @@ public class Percolation {
     public void open(int row, int col) {
         if (row < 1 || row > gridSize || col < 1 || col > gridSize)
             throw new IllegalArgumentException();
-        if (!isOpen(row, col)) {
-            grid[row - 1][col - 1] = true;
-            // StdOut.printf("(%s, %s) open%n", row, col);
-            openSites++;
-            lookAround(row, col);
-            // printGrid();
-            // printIsTrue();
-        }
+        grid[row - 1][col - 1] = true;
+        openSites++;
+        lookAround(row, col);
     }
 
     // is the site (row, col) open?
@@ -64,6 +60,7 @@ public class Percolation {
     public boolean percolates() {
         for (int i = 0; i < gridSize; i++) {
             if (grid[gridSize - 1][i] && isFull(gridSize, i + 1))
+                // if (isFull(gridSize, i + 1))
                 return true;
         }
         return false;
