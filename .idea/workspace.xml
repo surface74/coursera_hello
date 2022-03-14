@@ -79,7 +79,12 @@
     <property name="last_opened_file_path" value="$PROJECT_DIR$" />
     <property name="settings.editor.selected.configurable" value="project.propDebugger" />
   </component>
-  <component name="RunManager" selected="Application.LookForThree">
+  <component name="RunManager" selected="Application.Deque">
+    <configuration name="Deque" type="Application" factoryName="Application">
+      <option name="MAIN_CLASS_NAME" value="Deque" />
+      <module name="Algorithms, Part I" />
+      <method v="2" />
+    </configuration>
     <configuration name="Euclid" type="Application" factoryName="Application">
       <option name="MAIN_CLASS_NAME" value="Euclid" />
       <module name="Algorithms, Part I" />
