@@ -4,8 +4,8 @@
  *  Last modified:     March 14, 2022
  **************************************************************************** */
 
-import edu.princeton.cs.algs4.StdIn;
 import edu.princeton.cs.algs4.StdOut;
+import edu.princeton.cs.algs4.StdRandom;
 
 import java.util.Iterator;
 
@@ -14,17 +14,18 @@ public class Deque<Item> implements Iterable<Item> {
     private int size;
     private int head;
     private int tail;
-    private int minCapacity;
 
     private Item[] store;
 
     // construct an empty deque
     public Deque(int capacity) {
+        if (capacity < 1)
+            throw new IndexOutOfBoundsException();
+
         store = (Item[]) new Object[capacity];
         size = 0;
         head = capacity / 2;
         tail = head;
-        minCapacity = capacity;
     }
 
     // is the deque empty?
@@ -41,36 +42,29 @@ public class Deque<Item> implements Iterable<Item> {
     public void addFirst(Item item) {
         if (item == null)
             throw new IllegalArgumentException();
-        if (size == 0) {
-            store[head] = item;
-            size++;
-            StdOut.printf("(head %s, tail %s)", head, tail);
-            return;
+        if (size > 0) {
+            if (head == 0) {
+                // resizeHead(size + store.length);
+                resizeHead(2 * size + getLength() - tail - 1);
+            }
+            --head;
         }
-        if (head == 0) {
-            resizeHead(size);
-        }
-        store[--head] = item;
+        store[head] = item;
         size++;
-        StdOut.printf("(head %s, tail %s)", head, tail);
     }
 
     // add the item to the back
     public void addLast(Item item) {
         if (item == null)
             throw new IllegalArgumentException();
-        if (size == 0) {
-            store[tail] = item;
-            size++;
-            StdOut.printf("(head %s, tail %s)", head, tail);
-            return;
+        if (size > 0) {
+            if (tail == store.length - 1) {
+                resizeTail(size + getLength());
+            }
+            ++tail;
         }
-        if (tail == store.length - 1) {
-            resizeTail(size);
-        }
-        store[++tail] = item;
+        store[tail] = item;
         size++;
-        StdOut.printf("(head %s, tail %s)", head, tail);
     }
 
     // remove and return the item from the front
@@ -78,13 +72,14 @@ public class Deque<Item> implements Iterable<Item> {
         if (isEmpty())
             throw new java.util.NoSuchElementException();
 
-        if (size)
-            Item item = store[head];
-        store[head++] = null;
+        if (size <= head / 2) {
+            resizeHead(2 * size + store.length - tail - 1);
+        }
+        Item item = store[head];
         size--;
-
-        if (size <= head / 4)
-            resizeHead();
+        store[head] = null;
+        if (size > 0)
+            head++;
         return item;
     }
 
@@ -94,8 +89,12 @@ public class Deque<Item> implements Iterable<Item> {
             throw new java.util.NoSuchElementException();
 
         Item item = store[tail];
-        store[tail--] = null;
         size--;
+        store[tail] = null;
+        if (size > 0)
+            tail--;
+        if (size > 1 && size <= (store.length - tail - 1) / 2)
+            resizeTail(tail + size + 1);
         return item;
     }
 
@@ -127,42 +126,74 @@ public class Deque<Item> implements Iterable<Item> {
         for (int i = 0; i < store.length; i++) {
             StdOut.printf("%s ", store[i]);
         }
-        StdOut.println();
+        StdOut.printf(": (%s-%s-%s)=%s%n", head, size, getLength() - tail - 1, getLength());
     }
 
     private void resizeHead(int newSize) {
-        Item[] newDeque = (Item[]) new Object[newSize + store.length];
+        int minSpace = size + 1;
+        if (newSize < minSpace)
+            throw new IndexOutOfBoundsException();
+
+        Item[] newDeque = (Item[]) new Object[newSize];
+
+        int freeAtHead = (newSize > store.length) ?
+                         newSize - store.length :
+                         newSize + head - store.length;
         for (int i = 0; i < size; i++) {
-            newDeque[i + newSize] = store[i];
+            newDeque[i + freeAtHead] = store[i + head];
         }
+
         store = newDeque;
-        head = newSize;
-        tail = newSize + size - 1;
-        StdOut.printf("(resizeHead to %s, head %s, tail %s)",
-                      store.length, head, tail);
+        head = freeAtHead;
+        tail = head + size - 1;
     }
 
     private void resizeTail(int newSize) {
-        Item[] newDeque = (Item[]) new Object[newSize + store.length];
-        for (int i = 0; i < store.length; i++) {
+        int minSpace = size + 1;
+        if (newSize < minSpace)
+            throw new IndexOutOfBoundsException();
+
+        Item[] newDeque = (Item[]) new Object[newSize];
+        for (int i = 0; i < tail + 1; i++) {
             newDeque[i] = store[i];
         }
         store = newDeque;
-        StdOut.printf("(resizeTail to %s, head %s, tail %s)",
-                      store.length, head, tail);
+    }
+
+    private int getLength() {
+        return store.length;
     }
 
     // unit testing (required)
     public static void main(String[] args) {
-        Deque<Integer> deque = new Deque<Integer>(20);
+        Deque<Integer> deque = new Deque<Integer>(Integer.parseInt(args[0]));
 
-        while (!StdIn.isEmpty()) {
-            int value = StdIn.readInt();
-            System.out.printf("%s ", value);
-            deque.addFirst(value);
-            System.out.printf(" items: %s%n", deque.size());
+        for (int i = 0; i < 150; i++) {
+            int r = StdRandom.uniform(0, 100);
+            if (r < 25)
+                deque.addFirst(r);
+            else {
+                if (r < 51)
+                    deque.addLast(r);
+                else {
+                    if (!deque.isEmpty()) {
+                        if (r < 76)
+
+                            deque.removeFirst();
+                        else
+                            deque.removeLast();
+                    }
+                }
+            }
         }
-        StdOut.println();
+
+        // while (!StdIn.isEmpty()) {
+        //     int value = StdIn.readInt();
+        //     // System.out.printf("%s ", value);
+        //     deque.addLast(value);
+        //     // System.out.printf(" items: %s, size %s%n", deque.size(), deque.getLength());
+        // }
+        // StdOut.println();
 
         deque.outDeque();
     }
