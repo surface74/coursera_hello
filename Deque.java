@@ -18,14 +18,8 @@ public class Deque<Item> implements Iterable<Item> {
     private Item[] store;
 
     // construct an empty deque
-    public Deque(int capacity) {
-        if (capacity < 1)
-            throw new IndexOutOfBoundsException();
-
-        store = (Item[]) new Object[capacity];
-        size = 0;
-        head = capacity / 2;
-        tail = head;
+    public Deque() {
+        store = (Item[]) new Object[1];
     }
 
     // is the deque empty?
@@ -44,8 +38,7 @@ public class Deque<Item> implements Iterable<Item> {
             throw new IllegalArgumentException();
         if (size > 0) {
             if (head == 0) {
-                // resizeHead(size + store.length);
-                resizeHead(2 * size + getLength() - tail - 1);
+                resizeHead(2 * size + store.length - tail - 1);
             }
             --head;
         }
@@ -59,7 +52,7 @@ public class Deque<Item> implements Iterable<Item> {
             throw new IllegalArgumentException();
         if (size > 0) {
             if (tail == store.length - 1) {
-                resizeTail(size + getLength());
+                resizeTail(size + store.length);
             }
             ++tail;
         }
@@ -107,7 +100,7 @@ public class Deque<Item> implements Iterable<Item> {
         private int current = head;
 
         public boolean hasNext() {
-            return (size > 0) && (current < tail);
+            return !isEmpty() && current <= tail;
         }
 
         public void remove() {
@@ -122,12 +115,13 @@ public class Deque<Item> implements Iterable<Item> {
         }
     }
 
-    private void outDeque() {
-        for (int i = 0; i < store.length; i++) {
-            StdOut.printf("%s ", store[i]);
-        }
-        StdOut.printf(": (%s-%s-%s)=%s%n", head, size, getLength() - tail - 1, getLength());
-    }
+    // private void outDeque() {
+    //     for (int i = 0; i < store.length; i++) {
+    //         StdOut.printf("%s ", store[i]);
+    //     }
+    //     StdOut.printf(": (%s-%s-%s)=%s%n",
+    //                   head, size, store.length - tail - 1, store.length);
+    // }
 
     private void resizeHead(int newSize) {
         int minSpace = size + 1;
@@ -160,13 +154,21 @@ public class Deque<Item> implements Iterable<Item> {
         store = newDeque;
     }
 
-    private int getLength() {
-        return store.length;
-    }
-
     // unit testing (required)
     public static void main(String[] args) {
-        Deque<Integer> deque = new Deque<Integer>(Integer.parseInt(args[0]));
+        Deque<Integer> deque = new Deque<Integer>();
+
+        deque.addFirst(15);
+        StdOut.printf("Added to head. Size deque: %s%n", deque.size());
+
+        deque.addFirst(16);
+        StdOut.printf("Added to tail. Size deque: %s%n", deque.size());
+
+        StdOut.printf("Removed from tail: %s. ", deque.removeLast());
+        StdOut.printf("Size deque: %s%n", deque.size());
+
+        StdOut.printf("Removed from head: %s. ", deque.removeFirst());
+        StdOut.printf("Size deque: %s%n", deque.size());
 
         for (int i = 0; i < 150; i++) {
             int r = StdRandom.uniform(0, 100);
@@ -178,7 +180,6 @@ public class Deque<Item> implements Iterable<Item> {
                 else {
                     if (!deque.isEmpty()) {
                         if (r < 76)
-
                             deque.removeFirst();
                         else
                             deque.removeLast();
@@ -186,7 +187,10 @@ public class Deque<Item> implements Iterable<Item> {
                 }
             }
         }
-
+        StdOut.print("Random add/remove result: ");
+        for (int i : deque)
+            StdOut.printf("%s ", i);
+        StdOut.println();
         // while (!StdIn.isEmpty()) {
         //     int value = StdIn.readInt();
         //     // System.out.printf("%s ", value);
@@ -194,8 +198,6 @@ public class Deque<Item> implements Iterable<Item> {
         //     // System.out.printf(" items: %s, size %s%n", deque.size(), deque.getLength());
         // }
         // StdOut.println();
-
-        deque.outDeque();
     }
 
 }
