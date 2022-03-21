@@ -81,9 +81,14 @@
     <property name="last_opened_file_path" value="$PROJECT_DIR$" />
     <property name="settings.editor.selected.configurable" value="project.propDebugger" />
   </component>
-  <component name="RunManager" selected="Application.Deque">
+  <component name="RunManager" selected="Application.DutchFlag">
     <configuration name="Deque" type="Application" factoryName="Application">
       <option name="MAIN_CLASS_NAME" value="Deque" />
+      <module name="Algorithms, Part I" />
+      <method v="2" />
+    </configuration>
+    <configuration name="DutchFlag" type="Application" factoryName="Application">
+      <option name="MAIN_CLASS_NAME" value="DutchFlag" />
       <module name="Algorithms, Part I" />
       <method v="2" />
     </configuration>
