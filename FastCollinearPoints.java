@@ -4,6 +4,8 @@
  *  Last modified:     March 23, 2022
  **************************************************************************** */
 
+import edu.princeton.cs.algs4.In;
+import edu.princeton.cs.algs4.StdDraw;
 import edu.princeton.cs.algs4.StdOut;
 
 import java.util.Arrays;
@@ -16,42 +18,39 @@ public class FastCollinearPoints {
         // check arguments
         if (points == null)
             throw new IllegalArgumentException();
+        if (points[0] == null)
+            throw new IllegalArgumentException();
         for (int i = 0; i < points.length - 1; i++) {
-            if (points[i] == null || points[i + 1] == null)
-                throw new IllegalArgumentException();
-            String pointStr = points[i].toString();
             for (int j = i + 1; j < points.length; j++) {
-                if (points[j] == null || pointStr.equals(points[j].toString()))
+                if (points[j] == null || points[i].compareTo(points[j]) == 0)
                     throw new IllegalArgumentException();
             }
         }
 
-        for (int i = 0; i < points.length - 3; i++) {
-            Point[] candidates = Arrays.copyOfRange(points, i + 1, points.length);
-            printArray(candidates);
+        for (int i = 0; i < points.length; i++) {
+            Point[] candidates = Arrays.copyOf(points, points.length);
             Arrays.sort(candidates, points[i].slopeOrder());
-
+            printArray(candidates);
             Point basePoint = points[i];
-            int begin = 0;
-            double startSlope = basePoint.slopeTo(candidates[0]);
-
-            for (int j = 1; j < candidates.length; j++) {
-                if (startSlope != basePoint.slopeTo(candidates[j])) {
+            int begin = 1;
+            double startSlope = basePoint.slopeTo(candidates[1]);
+            StdOut.printf("startSlope: %s%n", startSlope);
+            for (int j = 2; j < candidates.length; j++) {
+                StdOut.printf("%s-%s: %s%n", basePoint, candidates[j],
+                              basePoint.slopeTo(candidates[j]));
+                if (startSlope != basePoint.slopeTo(candidates[j]) ||
+                        j == candidates.length - 1) {
                     if (j - begin >= 3) {
                         Point[] line = Arrays.copyOfRange(candidates, begin, j + 1);
-                        StdOut.println("Before sort:");
-                        printArray(line);
                         line[line.length - 1] = basePoint;
                         Arrays.sort(line);
-                        StdOut.println("After sort:");
-                        printArray(line);
-                        StdOut.println();
                         LineSegment lineSegment = new LineSegment(line[0], line[line.length - 1]);
                         addSegments(lineSegment);
                     }
                     begin = j;
                     startSlope = basePoint.slopeTo(candidates[j]);
                 }
+
             }
         }
     }
@@ -67,10 +66,7 @@ public class FastCollinearPoints {
             if (segments[i].toString().equals(segment.toString()))
                 return;
 
-        LineSegment[] newSegments = new LineSegment[segments.length + 1];
-        for (int i = 0; i < segments.length; i++) {
-            newSegments[i] = segments[i];
-        }
+        LineSegment[] newSegments = Arrays.copyOf(segments, segments.length + 1);
         newSegments[newSegments.length - 1] = segment;
         segments = newSegments;
     }
@@ -86,22 +82,53 @@ public class FastCollinearPoints {
     }
 
     public static void main(String[] args) {
-        Point[] points = {
-                new Point(60, 30), new Point(20, 10), new Point(40, 10),
-                new Point(70, 10), new Point(10, 10), new Point(0, 10),
-                new Point(10, 70), new Point(20, 20), new Point(30, 30),
-                new Point(60, 60)
-        };
+        // read the n points from a file
+        In in = new In(args[0]);
+        int n = in.readInt();
+        Point[] points = new Point[n];
+        for (int i = 0; i < n; i++) {
+            int x = in.readInt();
+            int y = in.readInt();
+            points[i] = new Point(x, y);
+        }
 
-        StdOut.printf("Set of points:%n");
-        for (Point p : points)
-            StdOut.printf("%s; ", p);
-        StdOut.println();
+        // draw the points
+        StdDraw.enableDoubleBuffering();
+        StdDraw.setXscale(0, 32768);
+        StdDraw.setYscale(0, 32768);
+        StdDraw.setPenRadius(0.02);
+        for (Point p : points) {
+            p.draw();
+        }
+        StdDraw.show();
 
-        FastCollinearPoints fast = new FastCollinearPoints(points);
-        StdOut.printf("contains %s segments \"4 points in line\".%n", fast.numberOfSegments());
-        for (LineSegment ls : fast.segments())
-            StdOut.println(ls);
-        StdOut.println();
+        // print and draw the line segments
+        StdDraw.setPenRadius();
+        FastCollinearPoints collinear = new FastCollinearPoints(points);
+        for (LineSegment segment : collinear.segments()) {
+            StdOut.println(segment);
+            segment.draw();
+        }
+        StdDraw.show();
     }
+    // public static void main(String[] args) {
+    //     Point[] points = {
+    //             new Point(60, 30), new Point(20, 10), new Point(40, 10),
+    //             new Point(70, 10), new Point(10, 10), new Point(0, 10),
+    //             new Point(10, 70), new Point(20, 20), new Point(30, 30),
+    //             new Point(60, 60), new Point(70, 70), new Point(20, 50)
+    //     };
+    //
+    //     StdOut.printf("Set of points:%n");
+    //     for (Point p : points)
+    //         StdOut.printf("%s; ", p);
+    //     StdOut.println();
+    //
+    //     FastCollinearPoints fast = new FastCollinearPoints(points);
+    //
+    //     StdOut.printf("contains %s segments \"N points in line\".%n", fast.numberOfSegments());
+    //     for (LineSegment ls : fast.segments())
+    //         StdOut.println(ls);
+    //     StdOut.println();
+    // }
 }

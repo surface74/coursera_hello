@@ -86,7 +86,8 @@ public class Point implements Comparable<Point> {
      * argument point
      */
     public int compareTo(Point that) {
-        if (this.y > that.y)
+        if (this.y > that.y ||
+                (this.y == that.y && this.x > that.x))
             return 1;
         if (this.y < that.y || this.x < that.x)
             return -1;
@@ -131,13 +132,13 @@ public class Point implements Comparable<Point> {
      * Unit tests the Point data type.
      */
     public static void main(String[] args) {
-        Point p0 = new Point(2, 1);
-        Point p1 = new Point(4, 2);
-        Point p2 = new Point(10, 3);
-        System.out.println(p0.slopeTo(p1));
-        System.out.println(p1.slopeTo(p0));
-        Comparator<Point> c = p0.slopeOrder();
-        int result = c.compare(p1, p2);
-        System.out.printf("%s", result);
+        Point p0 = new Point(98, 360);
+        Point p1 = new Point(393, 360);
+        // Point p2 = new Point(10, 3);
+        System.out.println(p0.compareTo(p1));
+        System.out.println(p1.compareTo(p0));
+        // Comparator<Point> c = p0.slopeOrder();
+        // int result = c.compare(p1, p2);
+        // System.out.printf("%s", result);
     }
 }
