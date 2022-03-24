@@ -28,27 +28,45 @@ public class FastCollinearPoints {
         }
 
         for (int i = 0; i < points.length; i++) {
+            StdOut.println();
             Point[] candidates = Arrays.copyOf(points, points.length);
             Arrays.sort(candidates, points[i].slopeOrder());
+            StdOut.print("Sorted cand: ");
             printArray(candidates);
+
             Point basePoint = points[i];
+            StdOut.printf("basePoint: %s%n", basePoint);
             int begin = 1;
-            double startSlope = basePoint.slopeTo(candidates[1]);
-            StdOut.printf("startSlope: %s%n", startSlope);
+            double startSlope = basePoint.slopeTo(candidates[begin]);
+            StdOut.printf("startSlope: %s-%s=%s%n", basePoint, candidates[begin], startSlope);
             for (int j = 2; j < candidates.length; j++) {
                 StdOut.printf("%s-%s: %s%n", basePoint, candidates[j],
                               basePoint.slopeTo(candidates[j]));
-                if (startSlope != basePoint.slopeTo(candidates[j]) ||
-                        j == candidates.length - 1) {
-                    if (j - begin >= 3) {
+                if (startSlope != basePoint.slopeTo(candidates[j])) {
+                    if (j - begin >= 2) {
                         Point[] line = Arrays.copyOfRange(candidates, begin, j + 1);
                         line[line.length - 1] = basePoint;
                         Arrays.sort(line);
+                        StdOut.print("Sorted array:");
+                        printArray(line);
                         LineSegment lineSegment = new LineSegment(line[0], line[line.length - 1]);
+
                         addSegments(lineSegment);
                     }
                     begin = j;
-                    startSlope = basePoint.slopeTo(candidates[j]);
+                    startSlope = basePoint.slopeTo(candidates[begin]);
+                }
+                else if (j == candidates.length - 1) {
+                    StdOut.printf("end: j(%s)-begin(%s)=%s%n", j, begin, j - begin);
+                    if (j - begin >= 2) {
+                        Point[] line = Arrays.copyOfRange(candidates, begin, j + 1);
+                        line[line.length - 1] = basePoint;
+                        Arrays.sort(line);
+                        StdOut.print("Sorted array:");
+                        printArray(line);
+                        LineSegment lineSegment = new LineSegment(line[0], line[line.length - 1]);
+                        addSegments(lineSegment);
+                    }
                 }
 
             }
@@ -62,6 +80,7 @@ public class FastCollinearPoints {
     }
 
     private void addSegments(LineSegment segment) {
+        StdOut.printf("found segment: %s%n", segment);
         for (int i = 0; i < segments.length; i++)
             if (segments[i].toString().equals(segment.toString()))
                 return;
@@ -96,7 +115,7 @@ public class FastCollinearPoints {
         StdDraw.enableDoubleBuffering();
         StdDraw.setXscale(0, 32768);
         StdDraw.setYscale(0, 32768);
-        StdDraw.setPenRadius(0.02);
+        StdDraw.setPenRadius(0.01);
         for (Point p : points) {
             p.draw();
         }
