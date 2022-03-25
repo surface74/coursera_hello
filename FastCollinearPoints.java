@@ -12,6 +12,7 @@ import java.util.Arrays;
 
 public class FastCollinearPoints {
     private LineSegment[] segments = new LineSegment[0];
+    private final int MIN_POINTS_IN_LINE = 4;
 
     // finds all line segments containing 4 or more points
     public FastCollinearPoints(Point[] points) {
@@ -43,26 +44,30 @@ public class FastCollinearPoints {
                 StdOut.printf("%s-%s: %s%n", basePoint, candidates[j],
                               basePoint.slopeTo(candidates[j]));
                 if (startSlope != basePoint.slopeTo(candidates[j])) {
-                    if (j - begin >= 2) {
+                    StdOut.printf("line: j(%s)-begin(%s)=%s%n", j, begin, j - begin);
+                    int lineLength = j - begin + 1;
+                    if (lineLength >= MIN_POINTS_IN_LINE) {
                         Point[] line = Arrays.copyOfRange(candidates, begin, j + 1);
                         line[line.length - 1] = basePoint;
                         Arrays.sort(line);
-                        StdOut.print("Sorted array:");
+                        StdOut.printf("Sorted array (%s):", line.length);
                         printArray(line);
                         LineSegment lineSegment = new LineSegment(line[0], line[line.length - 1]);
-
                         addSegments(lineSegment);
                     }
                     begin = j;
                     startSlope = basePoint.slopeTo(candidates[begin]);
+                    StdOut.printf("startSlope: %s-%s=%s%n", basePoint, candidates[begin],
+                                  startSlope);
                 }
                 else if (j == candidates.length - 1) {
                     StdOut.printf("end: j(%s)-begin(%s)=%s%n", j, begin, j - begin);
-                    if (j - begin >= 2) {
-                        Point[] line = Arrays.copyOfRange(candidates, begin, j + 1);
+                    int lineLength = j - begin + 2;
+                    if (lineLength >= MIN_POINTS_IN_LINE) {
+                        Point[] line = Arrays.copyOfRange(candidates, begin, j + 2);
                         line[line.length - 1] = basePoint;
                         Arrays.sort(line);
-                        StdOut.print("Sorted array:");
+                        StdOut.printf("Sorted array(rest) (%s):", line.length);
                         printArray(line);
                         LineSegment lineSegment = new LineSegment(line[0], line[line.length - 1]);
                         addSegments(lineSegment);
@@ -100,6 +105,13 @@ public class FastCollinearPoints {
         return Arrays.copyOf(segments, segments.length);
     }
 
+    private void drawLabel() {
+        for (int i = 2; i < 32; i = i + 2) {
+            StdDraw.line(i, 0, i, 1);
+            StdDraw.line(0, i, 1, i);
+        }
+    }
+
     public static void main(String[] args) {
         // read the n points from a file
         In in = new In(args[0]);
@@ -113,8 +125,8 @@ public class FastCollinearPoints {
 
         // draw the points
         StdDraw.enableDoubleBuffering();
-        StdDraw.setXscale(0, 32768);
-        StdDraw.setYscale(0, 32768);
+        StdDraw.setXscale(0, 32);
+        StdDraw.setYscale(0, 32);
         StdDraw.setPenRadius(0.01);
         for (Point p : points) {
             p.draw();
@@ -128,6 +140,7 @@ public class FastCollinearPoints {
             StdOut.println(segment);
             segment.draw();
         }
+        collinear.drawLabel();
         StdDraw.show();
     }
     // public static void main(String[] args) {
