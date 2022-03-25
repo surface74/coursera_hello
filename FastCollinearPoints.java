@@ -11,8 +11,8 @@ import edu.princeton.cs.algs4.StdOut;
 import java.util.Arrays;
 
 public class FastCollinearPoints {
+    private static final int MIN_POINTS_IN_LINE = 4;
     private LineSegment[] segments = new LineSegment[0];
-    private final int MIN_POINTS_IN_LINE = 4;
 
     // finds all line segments containing 4 or more points
     public FastCollinearPoints(Point[] points) {
@@ -27,68 +27,48 @@ public class FastCollinearPoints {
                     throw new IllegalArgumentException();
             }
         }
-
+        if (points.length < MIN_POINTS_IN_LINE)
+            return;
+        
         for (int i = 0; i < points.length; i++) {
-            StdOut.println();
             Point[] candidates = Arrays.copyOf(points, points.length);
             Arrays.sort(candidates, points[i].slopeOrder());
-            StdOut.print("Sorted cand: ");
-            printArray(candidates);
 
             Point basePoint = points[i];
-            StdOut.printf("basePoint: %s%n", basePoint);
             int begin = 1;
             double startSlope = basePoint.slopeTo(candidates[begin]);
-            StdOut.printf("startSlope: %s-%s=%s%n", basePoint, candidates[begin], startSlope);
             for (int j = 2; j < candidates.length; j++) {
-                StdOut.printf("%s-%s: %s%n", basePoint, candidates[j],
-                              basePoint.slopeTo(candidates[j]));
                 if (startSlope != basePoint.slopeTo(candidates[j])) {
-                    StdOut.printf("line: j(%s)-begin(%s)=%s%n", j, begin, j - begin);
                     int lineLength = j - begin + 1;
                     if (lineLength >= MIN_POINTS_IN_LINE) {
                         Point[] line = Arrays.copyOfRange(candidates, begin, j + 1);
                         line[line.length - 1] = basePoint;
                         Arrays.sort(line);
-                        StdOut.printf("Sorted array (%s):", line.length);
-                        printArray(line);
                         LineSegment lineSegment = new LineSegment(line[0], line[line.length - 1]);
                         addSegments(lineSegment);
                     }
                     begin = j;
                     startSlope = basePoint.slopeTo(candidates[begin]);
-                    StdOut.printf("startSlope: %s-%s=%s%n", basePoint, candidates[begin],
-                                  startSlope);
                 }
                 else if (j == candidates.length - 1) {
-                    StdOut.printf("end: j(%s)-begin(%s)=%s%n", j, begin, j - begin);
                     int lineLength = j - begin + 2;
                     if (lineLength >= MIN_POINTS_IN_LINE) {
                         Point[] line = Arrays.copyOfRange(candidates, begin, j + 2);
                         line[line.length - 1] = basePoint;
                         Arrays.sort(line);
-                        StdOut.printf("Sorted array(rest) (%s):", line.length);
-                        printArray(line);
                         LineSegment lineSegment = new LineSegment(line[0], line[line.length - 1]);
                         addSegments(lineSegment);
                     }
                 }
-
             }
         }
     }
 
-    private void printArray(Point[] array) {
-        for (Point p : array)
-            StdOut.printf("%s; ", p);
-        StdOut.println();
-    }
-
     private void addSegments(LineSegment segment) {
-        StdOut.printf("found segment: %s%n", segment);
         for (int i = 0; i < segments.length; i++)
-            if (segments[i].toString().equals(segment.toString()))
+            if (segments[i].toString().equals(segment.toString())) {
                 return;
+            }
 
         LineSegment[] newSegments = Arrays.copyOf(segments, segments.length + 1);
         newSegments[newSegments.length - 1] = segment;
@@ -105,12 +85,17 @@ public class FastCollinearPoints {
         return Arrays.copyOf(segments, segments.length);
     }
 
-    private void drawLabel() {
-        for (int i = 2; i < 32; i = i + 2) {
-            StdDraw.line(i, 0, i, 1);
-            StdDraw.line(0, i, 1, i);
-        }
-    }
+    // private void printArray(Point[] array) {
+    //     for (Point p : array)
+    //         StdOut.printf("%s; ", p);
+    //     StdOut.println();
+    // }
+    // private void drawLabel() {
+    //     for (int i = 2; i < 32; i = i + 2) {
+    //         StdDraw.line(i, 0, i, 1);
+    //         StdDraw.line(0, i, 1, i);
+    //     }
+    // }
 
     public static void main(String[] args) {
         // read the n points from a file
@@ -125,8 +110,8 @@ public class FastCollinearPoints {
 
         // draw the points
         StdDraw.enableDoubleBuffering();
-        StdDraw.setXscale(0, 32);
-        StdDraw.setYscale(0, 32);
+        StdDraw.setXscale(0, 100);
+        StdDraw.setYscale(0, 100);
         StdDraw.setPenRadius(0.01);
         for (Point p : points) {
             p.draw();
@@ -140,27 +125,7 @@ public class FastCollinearPoints {
             StdOut.println(segment);
             segment.draw();
         }
-        collinear.drawLabel();
+        // collinear.drawLabel();
         StdDraw.show();
     }
-    // public static void main(String[] args) {
-    //     Point[] points = {
-    //             new Point(60, 30), new Point(20, 10), new Point(40, 10),
-    //             new Point(70, 10), new Point(10, 10), new Point(0, 10),
-    //             new Point(10, 70), new Point(20, 20), new Point(30, 30),
-    //             new Point(60, 60), new Point(70, 70), new Point(20, 50)
-    //     };
-    //
-    //     StdOut.printf("Set of points:%n");
-    //     for (Point p : points)
-    //         StdOut.printf("%s; ", p);
-    //     StdOut.println();
-    //
-    //     FastCollinearPoints fast = new FastCollinearPoints(points);
-    //
-    //     StdOut.printf("contains %s segments \"N points in line\".%n", fast.numberOfSegments());
-    //     for (LineSegment ls : fast.segments())
-    //         StdOut.println(ls);
-    //     StdOut.println();
-    // }
 }

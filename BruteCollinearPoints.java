@@ -11,6 +11,7 @@ import edu.princeton.cs.algs4.StdOut;
 import java.util.Arrays;
 
 public class BruteCollinearPoints {
+    private static final int MIN_POINTS_IN_LINE = 4;
     private LineSegment[] segments = new LineSegment[0];
 
     // finds all line segments containing 4 points
@@ -26,6 +27,8 @@ public class BruteCollinearPoints {
                     throw new IllegalArgumentException();
             }
         }
+        if (points.length < MIN_POINTS_IN_LINE)
+            return;
 
         for (int i = 0; i < points.length - 3; i++)
             for (int j = i + 1; j < points.length - 2; j++)
@@ -55,10 +58,10 @@ public class BruteCollinearPoints {
     }
 
     private void addSegments(LineSegment segment) {
-        for (int i = 0; i < segments.length; i++)
+        for (int i = 0; i < segments.length; i++) {
             if (segments[i].toString().equals(segment.toString()))
                 return;
-
+        }
         LineSegment[] newSegments = Arrays.copyOf(segments, segments.length + 1);
         newSegments[newSegments.length - 1] = segment;
         segments = newSegments;
@@ -77,9 +80,9 @@ public class BruteCollinearPoints {
 
         // draw the points
         StdDraw.enableDoubleBuffering();
-        StdDraw.setXscale(0, 32768);
-        StdDraw.setYscale(0, 32768);
-        StdDraw.setPenRadius(0.02);
+        StdDraw.setXscale(0, 100);
+        StdDraw.setYscale(0, 100);
+        StdDraw.setPenRadius(0.01);
         for (Point p : points) {
             p.draw();
         }
@@ -88,30 +91,11 @@ public class BruteCollinearPoints {
         // print and draw the line segments
         StdDraw.setPenRadius();
         FastCollinearPoints collinear = new FastCollinearPoints(points);
+        StdOut.printf("Segments: %s%n", collinear.numberOfSegments());
         for (LineSegment segment : collinear.segments()) {
             StdOut.println(segment);
             segment.draw();
         }
         StdDraw.show();
     }
-
-    // public static void main(String[] args) {
-    //     Point[] points = {
-    //             new Point(60, 30), new Point(20, 10), new Point(40, 10),
-    //             new Point(70, 10), new Point(10, 10), new Point(0, 10),
-    //             new Point(10, 70), new Point(20, 20), new Point(30, 30),
-    //             new Point(60, 60)
-    //     };
-    //
-    //     StdOut.print("Set of points: ");
-    //     for (Point p : points)
-    //         StdOut.printf("%s; ", p);
-    //     StdOut.println();
-    //
-    //     BruteCollinearPoints brute = new BruteCollinearPoints(points);
-    //     StdOut.printf("contains %s segments \"4 points in line\".%n", brute.numberOfSegments());
-    //     for (LineSegment ls : brute.segments())
-    //         StdOut.println(ls);
-    //     StdOut.println();
-    // }
 }
